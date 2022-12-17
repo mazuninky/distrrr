@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package dev.mazuninky.distrrr;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "job-status.proto";
+
+service JobService {
+  rpc CreateJob(google.protobuf.Empty) returns (CreateJobResponse) {}
+  rpc CreateJobTask(CreateJobTaskRequest) returns (google.protobuf.Empty) {}
+  rpc GetJob(GetJobRequest) returns (GetJobResponse) {}
+
+  rpc GetTask(GetTaskRequest) returns (GetTaskResponse) {}
+  rpc CommitTask(CommitTaskRequest) returns (google.protobuf.Empty) {};
+}
+
+// CreateJob
+
+message CreateJobRequest {
+  optional string job_id = 1;
+  optional string name = 2;
+  optional bytes data = 3;
+
+  optional uint32 retry_count = 4;
+}
+
+message CreateJobResponse {
+  string job_id = 1;
+}
+
+// CreateJobTask
+
+message CreateJobTaskRequest {
+  string job_id = 1;
+  repeated CreateTask task = 2;
+}
+
+message CreateTask {
+  optional string task_id = 1;
+  optional bytes task_data = 2;
+}
+
+// GetJob
+
+message GetJobRequest {
+  string job_id = 1;
+}
+
+message GetJobResponse {
+  string job_id = 1;
+  optional string name = 2;
+  optional bytes data = 3;
+  optional uint32 retry_count = 4;
+  JobStatus status = 5;
+  google.protobuf.Timestamp created_at = 6;
+}
+
+// GetTask
+
+message GetTaskRequest {
+  optional uint32 ack_timeout_ms = 1;
+  optional uint32 size = 2;
+}
+
+message GetTaskResponse {
+  repeated GetTask task = 1;
+}
+
+message GetTask {
+  string task_id = 1;
+  optional bytes task_data = 2;
+}
+
+// CommitTask
+
+message CommitTaskRequest {
+  string job_id = 1;
+  repeated CommitTask task = 2;
+}
+
+enum CommitTaskStatus {
+  SUCCESS = 0;
+  FAIL = 1;
+}
+
+message CommitTask {
+  string task_id = 1;
+  CommitTaskStatus status = 2;
+}
