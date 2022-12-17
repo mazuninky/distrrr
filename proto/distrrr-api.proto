@@ -6,23 +6,25 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "job-status.proto";
 
+// Job
+
 service JobService {
-  rpc CreateJob(google.protobuf.Empty) returns (CreateJobResponse) {}
+  rpc CreateJob(CreateJobRequest) returns (CreateJobResponse) {}
   rpc CreateJobTask(CreateJobTaskRequest) returns (google.protobuf.Empty) {}
   rpc GetJob(GetJobRequest) returns (GetJobResponse) {}
+  rpc CancelJob(CancelJobRequest) returns (google.protobuf.Empty) {}
 
   rpc GetTask(GetTaskRequest) returns (GetTaskResponse) {}
-  rpc CommitTask(CommitTaskRequest) returns (google.protobuf.Empty) {};
+  rpc CommitTask(CommitTaskRequest) returns (google.protobuf.Empty) {}
 }
 
 // CreateJob
 
 message CreateJobRequest {
-  optional string job_id = 1;
-  optional string name = 2;
-  optional bytes data = 3;
+  optional string name = 1;
+  optional bytes data = 2;
 
-  optional uint32 retry_count = 4;
+  optional uint32 retry_count = 3;
 }
 
 message CreateJobResponse {
@@ -56,6 +58,12 @@ message GetJobResponse {
   google.protobuf.Timestamp created_at = 6;
 }
 
+// CancelJob
+
+message CancelJobRequest {
+  string job_id = 1;
+}
+
 // GetTask
 
 message GetTaskRequest {
@@ -87,4 +95,30 @@ enum CommitTaskStatus {
 message CommitTask {
   string task_id = 1;
   CommitTaskStatus status = 2;
+}
+
+
+// Client
+
+service ClientService {
+  rpc CreateClient(CreateClientRequest) returns (ClientClientResponse) {}
+  rpc DestroyClient(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+}
+
+// CreateClient
+
+message CreateClientRequest {
+  string name = 1;
+  string meta = 2;
+  optional ClientCredentials credentials = 3;
+}
+
+message ClientCredentials {
+  string username = 1;
+  string password = 2;
+}
+
+message ClientClientResponse {
+  string id = 1;
+  string token = 2;
 }

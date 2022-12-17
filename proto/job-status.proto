@@ -6,5 +6,6 @@ enum JobStatus {
   WAITING = 0;
   PROCESSING = 1;
   COMPLETED = 2;
-  ERROR = 3;
+  CANCELED = 3;
+  ERROR = 4;
 }
