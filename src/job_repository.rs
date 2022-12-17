@@ -1,5 +1,5 @@
 use std::io::Empty;
-use tokio_postgres::{NoTls, Error, Client};
+use tokio_postgres::{Error, Client};
 use uuid::Uuid;
 
 #[async_trait::async_trait]
@@ -26,14 +26,9 @@ impl JobRepository for JobRepositoryImpl {
         data: Option<Vec<u8>>,
         retry_count: Option<u32>,
     ) -> Option<Error> {
-        let retry_count = if retry_count.is_some() {
-            retry_count.unwrap()
-        } else {
-            0
-        };
         let result = self.client
             .query("INSERT INTO distrrr.job(id, name, data, retry_count) VALUES ($1, $2, $3, $4)",
-                   &[&job_id, &name, &data, &retry_count],
+                   &[&job_id, &name, &data, &retry_count.unwrap_or(0)],
             ).await;
 
         return result.err();
